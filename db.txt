@@ -1,0 +1,37 @@
+CREATE TABLE IF NOT EXISTS features(
+	id INT AUTO_INCREMENT,
+	features TEXT,
+	main_feature int,
+	productId INT,
+	PRIMARY KEY (id),
+);
+CREATE TABLE IF NOT EXISTS reviews(
+	id INT AUTO_INCREMENT,
+	reviewer VARCHAR(128) not null,
+	review TEXT,
+	rating int,
+	productId INT,
+	PRIMARY KEY (id),
+	FOREIGN KEY (productId) REFERENCES products(id)
+);
+CREATE TABLE IF NOT EXISTS products (
+        id INT not null AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL,
+    brand VARCHAR(32) NOT NULL,    
+    warranty VARCHAR(255),
+    color     VARCHAR(12),
+    primaryImage VARCHAR(255) NOT NULL,
+    publisher VARCHAR(32),
+    inStock TINYINT(1),
+    isActive TINYINT(1),
+    description TEXT,
+    retailPrice DECIMAL(8,2) NOT NULL,
+    splPrice DECIMAL(8,2),
+    discount INT,
+        created DATE,
+        modified DATE,
+    categoryId INT NOT NULL REFERENCES categories(id),
+    reviewId INT REFERENCES reviews(id),
+    featuresId INT REFERENCES features(id),
+        PRIMARY KEY (id)
+);

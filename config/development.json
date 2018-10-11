@@ -1,0 +1,16 @@
+{
+    "databaseSettings":{
+        "host": "localhost",
+        "user": "root",
+        "password": "levis_111",
+        "database":"cctvDB"
+    },
+    "connectionPoolSettings":{
+        "host": "localhost",
+        "user": "root",
+        "password": "levis_111",
+        "database":"cctvDB",
+        "connectionLimit": 10,
+        "supportBigNumbers": true
+    }
+}

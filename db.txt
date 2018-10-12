@@ -1,18 +1,19 @@
 CREATE TABLE IF NOT EXISTS features(
 	id INT AUTO_INCREMENT,
 	features TEXT,
-	main_feature int,
-	productId INT,
-	PRIMARY KEY (id),
+	main_feature TEXT,
+	productId INT REFERENCES products(id),
+	PRIMARY KEY (id)
 );
 CREATE TABLE IF NOT EXISTS reviews(
 	id INT AUTO_INCREMENT,
 	reviewer VARCHAR(128) not null,
-	review TEXT,
+	review TEXT not null,
 	rating int,
-	productId INT,
-	PRIMARY KEY (id),
-	FOREIGN KEY (productId) REFERENCES products(id)
+    created DATE,
+    modified DATE,
+	productId INT REFERENCES products(id),
+	PRIMARY KEY (id)
 );
 CREATE TABLE IF NOT EXISTS products (
         id INT not null AUTO_INCREMENT,

@@ -5,6 +5,7 @@ const home = require('./routes/home');
 const products = require('./routes/products');
 const categories = require('./routes/categories');
 const reviews = require('./routes/reviews');
+const features = require('./routes/features');
 const helmet = require('helmet');
 const morgan = require('morgan');
 
@@ -21,6 +22,7 @@ app.use('/',home);
 app.use('/api/products',products);
 app.use('/api/categories',categories);
 app.use('/api/reviews',reviews);
+app.use('/api/features',features);
 
 app.listen(3000,() => {
    // console.log(__dirname+'\\logs\\access.log');

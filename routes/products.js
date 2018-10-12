@@ -4,7 +4,30 @@ const db = require('../services/db');
 const router = express.Router();
 
 router.get('/',(req,response) =>{
-    db.executeQuery('select * from products',(err, res)=>{
+    let sql='';
+    sql = 'select * from products';
+    let searchfields = 0;
+    if(req.query){sql = sql+' where';}
+    if(req.query.name){
+        sql = sql+ " name like %'"+req.query.name+"'";
+        searchfields++;
+    }
+    if(req.query.discount){
+        if(searchfields==0)
+        sql = sql+ " discount >="+req.query.discount+"'";
+        else
+        sql = sql+ " and discount >="+req.query.discount+"'";
+        searchfields++;
+    }
+    if(req.query.price){
+        if(searchfields==0)
+        sql = sql+ " retailPrice <="+req.query.price+"'";
+        else
+        sql = sql+ " and retailPrice <="+req.query.price+"'";
+        searchfields++;
+    }
+    if(searchfields==0) sql.replace("where","");
+    db.executeQuery(sql,(err, res)=>{
         if(err) { response.status(500).send("Server Error"); return;}
         let product = JSON.parse(JSON.stringify(res));
         if(product.length==0) { response.status(404).send("Didn't find products"); return;}
@@ -38,14 +61,21 @@ router.post('/',(req, response)=>{
     record.push(req.body.categoryId || 3);
     record.push(req.body.reviewId || `null`);
     record.push(req.body.featuresId || `null`);
+
+    let feature = [];
+    feature.push(req.body.features?`'${req.body.features}'`:`null`);
+    feature.push(req.body.main_feature?`'${req.body.main_feature}'`:`null`);
+    feature.push('?');
+
     var sql = "INSERT INTO products (name,brand,warranty,color,primaryImage,publisher,inStock,isActive,description,retailPrice,splPrice,discount,created,modified,categoryId,reviewId,featuresId) values ("+record+");";
     //('"+name+"','"+brand+"','"+warranty+"','"+color+"','"+primaryImage+"','"+publisher+"',"+inStock+","+isActive+",'"+description+"',"+retailPrice+","+splPrice+","+discount+",'"+created+"','"+modified+"',"+categoryId+","+reviewId+","+featuresId+");";
-
-    db.executeQuery(sql, function (err, result) {
+    var fsql = 'INSERT INTO features (features,main_feature,productId) values ('+feature+');'
+    db.transactions([sql,fsql], function (err, result) {
         if(err) { res.status(500).send(500,"Server Error"); return;}
         let r = JSON.parse(JSON.stringify(result));
         console.log(r);
-        response.status(300).send("1 record inserted, ID: " + r.insertId);
+        response.status(300).send("1 product inserted, ID: " + r.res1.insertId +" with features ID: "+r.res2.insertId);
+        
     });
 
 });
@@ -111,6 +141,8 @@ function validateProduct(product){
         discount:Joi.number(),
         categoryId:Joi.number(),
         reviewId:Joi.number(),
+        features:Joi.string(),
+        main_feature:Joi.string()
     };
 
     return Joi.validate(product,schema);

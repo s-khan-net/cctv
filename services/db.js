@@ -23,4 +23,49 @@ const config = require('config');
         });
     });
   }
+
+  exports.transactions = function(queries,callback){
+    pool.getConnection(function(err, con) {
+        if(err) { console.log(err); callback(true); return; }
+        console.log(queries);
+        con.beginTransaction(function(err){
+          if(err) {
+            con.rollback(function() {
+              con.release();
+              //Failure
+            });
+          }
+          else{
+            con.query(queries[0],(err,result1)=>{
+              if(err) {
+                con.rollback(function() {
+                  console.log(err)
+                });
+                callback(false);
+                return;
+              }
+              else{
+                con.query(queries[1], result1.insertId, function(err, result2) {
+                  if (err) { 
+                    con.rollback(function() {
+                      throw err;
+                    });
+                  }  
+                  con.commit(function(err) {
+                    if (err) { 
+                      con.rollback(function() {
+                        throw err;
+                      });
+                    }
+                    callback(false,{res1:result1,res2:result2});
+                  });
+                });
+              }
+              
+            });
+          }
+        })
+        
+    });
+  }
   //exports.con = con;

@@ -7,26 +7,27 @@ router.get('/',(req,response) =>{
     let sql='';
     sql = 'select * from products';
     let searchfields = 0;
-    if(req.query){sql = sql+' where';}
-    if(req.query.name){
-        sql = sql+ " name like %'"+req.query.name+"'";
-        searchfields++;
+    if(req.query){sql = sql+' where';
+        if(req.query.name){
+            sql = sql+ " name like %'"+req.query.name+"'";
+            searchfields++;
+        }
+        if(req.query.discount){
+            if(searchfields==0)
+            sql = sql+ " discount >="+req.query.discount+"'";
+            else
+            sql = sql+ " and discount >="+req.query.discount+"'";
+            searchfields++;
+        }
+        if(req.query.price){
+            if(searchfields==0)
+            sql = sql+ " retailPrice <="+req.query.price+"'";
+            else
+            sql = sql+ " and retailPrice <="+req.query.price+"'";
+            searchfields++;
+        }
     }
-    if(req.query.discount){
-        if(searchfields==0)
-        sql = sql+ " discount >="+req.query.discount+"'";
-        else
-        sql = sql+ " and discount >="+req.query.discount+"'";
-        searchfields++;
-    }
-    if(req.query.price){
-        if(searchfields==0)
-        sql = sql+ " retailPrice <="+req.query.price+"'";
-        else
-        sql = sql+ " and retailPrice <="+req.query.price+"'";
-        searchfields++;
-    }
-    if(searchfields==0) sql.replace("where","");
+    if(searchfields==0) sql = sql.replace("where","");
     db.executeQuery(sql,(err, res)=>{
         if(err) { response.status(500).send("Server Error"); return;}
         let product = JSON.parse(JSON.stringify(res));
@@ -48,7 +49,7 @@ router.post('/',(req, response)=>{
     record.push(`'${req.body.brand}'`);
     record.push(!req.body.warranty?'null':`'${req.body.warranty}'`);
     record.push(!req.body.color?'null':`'${req.body.color}'`);
-    record.push(req.body.primaryImage || `'/images/productimage'`);
+    record.push(req.body.primaryImage || `'/images/productImage.jpg'`);
     record.push(!req.body.publisher?'null':`'${req.body.publisher}'`);
     record.push(req.body.inStock || 0);
     record.push(req.body.isActive || 1);

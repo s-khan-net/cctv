@@ -11,6 +11,9 @@ const morgan = require('morgan');
 
 const app = express();
 app.use(express.json());
+app.use(express.static(`${__dirname}/public/views`));
+app.use('/js', express.static(__dirname + '/public/js'));
+app.use('/images', express.static(__dirname + '/public/images'));
 app.use(helmet());
 app.use(morgan('dev'));
 // // create a write stream (in append mode)
@@ -18,7 +21,13 @@ app.use(morgan('dev'));
 
 // // setup the logger
 // app.use(morgan('combined', { stream: accessLogStream }))
-app.use('/',home);
+//app.use('/',home);
+app.get('/about',(req,res)=>{
+    res.sendFile(`${__dirname}/public/views/about.html`)}
+);
+app.get('/products',(req,res)=>{
+    res.sendFile(`${__dirname}/public/views/products.html`)}
+);
 app.use('/api/products',products);
 app.use('/api/categories',categories);
 app.use('/api/reviews',reviews);

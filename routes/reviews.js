@@ -5,15 +5,27 @@ const router = express.Router();
 
 router.get('/',(req,response)=>{
     let sql='';
-    sql = 'select * from reviews ';
     if(req.query.reviewer){
-        sql  = sql + "where reviewer = '"+req.query.reviewer+"'";
+        sql  = "select * from reviewswhere reviewer = '"+req.query.reviewer+"'";
+    }
+    if(req.query.productId){
+        sql  = "select * from reviews,products where products.productId = reviews.productId and reviewer.productId = '"+req.query.productId+"'";
     }
     db.executeQuery(sql,(err,res)=>{
         if(err) { response.status(500).send("Server Error"); return;}
         let reviews = JSON.parse(JSON.stringify(res));
         if(reviews.length==0) { response.status(404).send("Didn't find reviews"); return;}
         response.status(200).send(reviews);
+    });
+});
+
+router.get('/ratings/:productId',(req,response)=>{
+    let sql="select count(1) rated, sum(rating) rate  from reviews where productId="+req.params.productId;
+    db.executeQuery(sql,(err,res)=>{
+        if(err) { response.status(500).send("Server Error"); return;}
+        let rating = JSON.parse(JSON.stringify(res));
+        if(rating.rated==0) { response.status(404).send("Not rated"); return;}
+        response.status(200).send(rating);
     });
 });
 

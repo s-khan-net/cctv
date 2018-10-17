@@ -5,27 +5,39 @@ const router = express.Router();
 
 router.get('/',(req,response) =>{
     let sql='';
-    sql = 'select * from products';
-    let searchfields = 0;
-    if(req.query){sql = sql+' where';
+    sql = 'select products.id,products.categoryId,categories.name category,products.name,products.brand,products.color,products.description,products.retailPrice,products.splPrice,products.discount,products.warranty,products.primaryImage,sum(reviews.rating) rating from categories,products left outer join reviews on products.id=reviews.productId  where  products.categoryId = categories.id ';
+    if(req.query){
         if(req.query.name){
-            sql = sql+ " name like %'"+req.query.name+"'";
-            searchfields++;
+            sql = sql+ "and products.name like %'"+req.query.name+"'";
         }
         if(req.query.discount){
-            if(searchfields==0)
-            sql = sql+ " discount >="+req.query.discount+"'";
-            else
-            sql = sql+ " and discount >="+req.query.discount+"'";
-            searchfields++;
+            sql = sql+ " and products.discount >="+req.query.discount+"'";
         }
         if(req.query.price){
-            if(searchfields==0)
-            sql = sql+ " retailPrice <="+req.query.price+"'";
-            else
-            sql = sql+ " and retailPrice <="+req.query.price+"'";
-            searchfields++;
+            sql = sql+ " and products.retailPrice between "+req.query.price1+" and "+req.query.price2;
         }
+        if(req.query.categoryId){
+            sql = sql+ " and products.categoryId = "+req.query.categoryId;
+        }
+        if(req.query.categoryName){
+            sql = sql+ " and categories.name = "+req.query.categoryName;
+        }
+        if(req.query.brand){
+            sql = sql+ " and products.brand = "+req.query.brand;
+        }
+        if(req.query.color){
+            sql = sql+ " and products.color = "+req.query.color;
+        }
+        sql = sql + ' group by products.name';
+        if(req.query.orderby){
+            sql = sql + " order by "+req.query.orderby;
+        }
+        else{
+            sql = sql + ' order by products.name';
+        }
+    }
+    else{
+        sql = sql + ' group by products.name order by  rating ';
     }
     if(searchfields==0) sql = sql.replace("where","");
     db.executeQuery(sql,(err, res)=>{

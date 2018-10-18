@@ -39,7 +39,6 @@ router.get('/',(req,response) =>{
     else{
         sql = sql + ' group by products.name order by  rating ';
     }
-    if(searchfields==0) sql = sql.replace("where","");
     db.executeQuery(sql,(err, res)=>{
         if(err) { response.status(500).send("Server Error"); return;}
         let product = JSON.parse(JSON.stringify(res));

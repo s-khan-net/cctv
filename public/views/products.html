@@ -7,8 +7,9 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.3/angular-route.min.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/products.css">
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
-    <script src="js/script.js"></script>
+    <script src="js/products.js"></script>
 </head>
 <body ng-app='cctvApp' ng-controller="ctrlProducts">
     <nav class="navbar navbar-inverse" role="navigation" style="padding-left:130px;">
@@ -25,15 +26,52 @@
     Cctv
  </p></div>
  <div>
-    <table border="1">
-    <tr ng-repeat="x in products">
-        <td>{{x.name}}</td>
-        <td>{{x.brand}}</td>
-        <td>{{x.retailPrice}}</td>
-        <td><img src="{{x.primaryImage}}" /></td>
-    </tr>
-    </table>
+    <div class="row">
+        <div class="col-lg-12 my-3">
+            <div class="pull-right">
+                <div class="btn-group">
+                    <button class="btn btn-info" id="list">
+                        List View
+                    </button>
+                    <button class="btn btn-danger" id="grid">
+                        Grid View
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div> 
+    <div id="products" class="row view-group" >
+        <div class="item col-xs-4 col-lg-4" ng-repeat="x in products">
+            <div class="thumbnail card">
+                <div class="img-event">
+                    <img class="group list-group-image img-fluid" src={{x.primaryImage}} alt="" />
+                </div>
+                <div class="caption card-body">
+                    <h4 class="group card-title inner list-group-item-heading">
+                        {{x.name}}</h4>
+                    <p class="group inner list-group-item-text">
+                        {{x.description}}</p>
+                    <div class="row">
+                        <div class="col-xs-12 col-md-6">
+                            <p class="lead"><i class="fa fa-inr"></i>
+                                {{x.retailPrice}}</p>
+                        </div>
+                        <div class="col-xs-12 col-md-6">
+                            <a class="btn btn-success" href="#">Add to cart</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>            
+    </div>
 </div>
 </div>
+<script>
+$(document).ready(function() {
+    $('#list').click(function(event){event.preventDefault();$('#products .item').addClass('list-group-item');});
+    $('#grid').click(function(event){event.preventDefault();$('#products .item').removeClass('list-group-item');
+    $('#products .item').addClass('grid-group-item');});
+});
+</script>
 </body>
 </html>

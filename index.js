@@ -13,6 +13,7 @@ const app = express();
 app.use(express.json());
 app.use(express.static(`${__dirname}/public/views`));
 app.use('/js', express.static(__dirname + '/public/js'));
+app.use('/css', express.static(__dirname + '/public/css'));
 app.use('/images', express.static(__dirname + '/public/images'));
 app.use(helmet());
 app.use(morgan('dev'));

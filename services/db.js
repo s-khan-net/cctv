@@ -24,7 +24,7 @@ const config = require('config');
     });
   }
 
-  exports.transactions = function(queries,callback){
+  exports.insertProducts = function(queries,callback){
     pool.getConnection(function(err, con) {
         if(err) { console.log(err); callback(true); return; }
         console.log(queries);

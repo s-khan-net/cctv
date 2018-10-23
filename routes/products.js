@@ -1,6 +1,8 @@
 const express = require('express');
 const Joi = require('joi');
 const db = require('../services/db');
+const jwt = require('jsonwebtoken');
+const config = require('config');
 const router = express.Router();
 
 router.get('/',(req,response) =>{
@@ -48,6 +50,14 @@ router.get('/',(req,response) =>{
 });
 
 router.post('/',(req, response)=>{
+    try{
+        const decoded = jwt.verify(req.params.token,config.get('cctvKey'));
+        if(!decoded) return response.status(400).send('Invalid token');
+    }
+    catch(ex){
+        response.status(401).send(`Cannot add products, error: ${ex.name}`);
+    }
+
     let { error } = validateProduct(req.body);
     if(error) return response.status(400).send(error.details[0].message);
     
@@ -82,7 +92,7 @@ router.post('/',(req, response)=>{
     var sql = "INSERT INTO products (name,brand,warranty,color,primaryImage,publisher,inStock,isActive,description,retailPrice,splPrice,discount,created,modified,categoryId,reviewId,featuresId) values ("+record+");";
     //('"+name+"','"+brand+"','"+warranty+"','"+color+"','"+primaryImage+"','"+publisher+"',"+inStock+","+isActive+",'"+description+"',"+retailPrice+","+splPrice+","+discount+",'"+created+"','"+modified+"',"+categoryId+","+reviewId+","+featuresId+");";
     var fsql = 'INSERT INTO features (features,main_feature,productId) values ('+feature+');'
-    db.transactions([sql,fsql], function (err, result) {
+    db.insertProducts([sql,fsql], function (err, result) {
         if(err) { res.status(500).send(500,"Server Error"); return;}
         let r = JSON.parse(JSON.stringify(result));
         console.log(r);

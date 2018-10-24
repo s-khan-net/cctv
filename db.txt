@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS users(
     last_name VARCHAR(128) not null,
     email VARCHAR(128) not null,
     sPassword VARCHAR(128) not null,
+    isAdmin tinyint default 0,
     created DATE,
     modified DATE,
     PRIMARY KEY (id)

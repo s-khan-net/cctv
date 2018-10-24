@@ -17,14 +17,17 @@ router.post('/',(req,response) =>{
             return;
         }
         let re = JSON.parse(JSON.stringify(r));
-        console.log(re[0].first_name);
+        if(!re[0]){
+            response.status(400).send('Invalid email or password'); 
+            return;
+        }
         let valid= bcrypt.compareSync(req.body.password,re[0].sPassword);
         if(!valid){
-            response.status(400).send('Invalid username or password'); 
+            response.status(400).send('Invalid email or password'); 
             return;
         }
         else{
-            const token = jwt.sign({id:re[0].id,fname:re[0].first_name,lname:re[0].last_name,email:re[0].email},config.get('cctvKey'),{ expiresIn:120 });
+            const token = jwt.sign({id:re[0].id,fname:re[0].first_name,lname:re[0].last_name,email:re[0].email,isAdmin:re[0].isAdmin},config.get('cctvKey'),{ expiresIn:120 });
             response.header('x-cctv-auth-key',token).status(200).send(`fine, url:/api/users/${re[0].id}`);
         }
     });

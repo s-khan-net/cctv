@@ -9,19 +9,19 @@ router.get('/',(req,response) =>{
     
     db.executeQuery(sql,(err, res)=>{
         if(err) { response.status(500).send("Server Error"); return;}
-        let user = JSON.parse(JSON.stringify(res));
-        if(user.length==0) { response.status(404).send("Didn't find users"); return;}
-        response.status(200).send(user);
+        let users = JSON.parse(JSON.stringify(res));
+        if(users.length==0) { response.status(404).send("Didn't find users"); return;}
+        response.status(200).send(users);
     });
 });
 router.get('/:id',(req,response) =>{
-    let sql='select first_name,last_name,email from users where id='+req.params.id;
+    let sql='select first_name,last_name,email,isAdmin from users where id='+req.params.id;
     
     db.executeQuery(sql,(err, res)=>{
         if(err) { response.status(500).send("Server Error"); return;}
         let user = JSON.parse(JSON.stringify(res));
         if(user.length==0) { response.status(404).send(`Didn't find user with id ${req.params.id}`); return;}
-        response.status(200).send(user);
+        response.status(200).send(user[0]);
     });
 });
 router.get('/check/:email',(req,res)=>{
@@ -38,6 +38,9 @@ router.post('/', (req,res)=>{
     if(error) return res.status(400).send(error.details[0].message);
 
     date = new Date();
+        // const salt=await bcrypt.genSalt(10);
+    // console.log(salt);
+    const pwd= bcrypt.hashSync(req.body.password,10);
     date = date.getUTCFullYear() + '-' +
         ('00' + (date.getUTCMonth()+1)).slice(-2) + '-' +
         ('00' + date.getUTCDate()).slice(-2);
@@ -45,15 +48,12 @@ router.post('/', (req,res)=>{
     record.push(`'${req.body.first_name}'`);
     record.push(`'${req.body.last_name}'`);
     record.push(`'${req.body.email}'`);
-    // const salt=await bcrypt.genSalt(10);
-    // console.log(salt);
-    const pwd= bcrypt.hashSync(req.body.password,10);
-    
     record.push(`'${pwd}'`);
+    record.push(`${req.body.isAdmin>0?1:0}`);
     record.push(`'${date}'`);
     record.push(`'${date}'`);
 
-    var sql = "INSERT INTO users (first_name,last_name,email,sPassword,created,modified) values ("+record+");";
+    var sql = "INSERT INTO users (first_name,last_name,email,sPassword,isAdmin,created,modified) values ("+record+");";
    
     var existsQ = "select count(1) e from users where email='"+req.body.email+"'";
     db.executeQuery( existsQ , function(e,r){
@@ -66,7 +66,7 @@ router.post('/', (req,res)=>{
                 if(err) { res.status(500).send(500,"Server Error"); return;}
                 re = JSON.parse(JSON.stringify(result));
                 console.log(re);
-                res.status(300).send(`1 user inserted, ID: ${re.insertId}, url:/api/users/${re.insertId}`);
+                res.status(300).send(`1 user inserted, url:/api/users/${re.insertId}`);
             });
         }
     });
@@ -79,7 +79,8 @@ function validateUser(user){
         first_name:Joi.string().min(4).required(),
         last_name:Joi.string().min(4).required(),
         email:Joi.string().email().required(),
-        password:Joi.string().min(4).required()
+        password:Joi.string().min(4).required(),
+        isAdmin:Joi.number()
     };
 
     return Joi.validate(user,schema);

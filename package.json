@@ -20,6 +20,9 @@
     "test": "jest",
     "start":"node index.js"
   },
+  "engines": {
+    "node":"8.9.4"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/s-khan-net/cctv.git"

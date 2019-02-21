@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-    <title>Single page web app using Angularjs</title>
+    <title>CCTV - Products</title>
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.3/angular.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.3/angular-route.min.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
@@ -12,14 +12,26 @@
     <script src="js/products.js"></script>
 </head>
 <body ng-app='cctvApp' ng-controller="ctrlProducts">
-    <nav class="navbar navbar-inverse" role="navigation" style="padding-left:130px;">
-        <ul class="nav navbar-nav">
-       <li><a href="/">Home</a></li>
-       <li class="active"><a href="/products">Products<span class="sr-only">(current)</span></a></li>
-       <li><a href="/about">About us</a></li>
-       <li><a href="/contact">Contact us</a></li>
-     </ul>
- </nav>
+        <nav class="navbar navbar-inverse">
+                <div class="container-fluid">
+                    <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>                        
+                    </button>
+                    <a class="navbar-brand" href="/">CCTV</a>
+                    </div>
+                    <div class="collapse navbar-collapse" id="myNavbar">
+                    <ul class="nav navbar-nav">
+                        <li><a href="/">Home</a></li>
+                        <li class="active"><a href="/products">Products<span class="sr-only">(current)</span></a></li>
+                        <li><a href="/about">About us</a></li>
+                        <li><a href="/contact">Contact us</a></li>
+                    </ul>
+                    </div>
+                </div>
+                </nav>
  <br/>
  <div class="container">
  <div class="jumbotron"> <p>
@@ -41,7 +53,7 @@
         </div>
     </div> 
     <div id="products" class="row view-group" >
-        <div class="item col-xs-4 col-lg-4" ng-repeat="x in products">
+        <div class="item col-xs-4 " ng-repeat="x in products">
             <div class="thumbnail card">
                 <div class="img-event">
                     <img class="group list-group-image img-fluid" src={{x.primaryImage}} alt="" />
